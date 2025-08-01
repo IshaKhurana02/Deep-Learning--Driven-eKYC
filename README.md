@@ -46,4 +46,64 @@ A web application that automates electronic Know Your Customer (eKYC) processes 
 
 ---
 
+⚙️ Working of the Project
+The eKYC system follows a multi-stage deep learning pipeline to validate a user's identity using a government-issued ID (Aadhar or PAN) and a selfie image. Here’s a step-by-step breakdown:
 
+1. Upload Inputs
+The user uploads:
+
+A scanned image of their Aadhar or PAN card
+
+A recent selfie photo
+
+2. Text Extraction using OCR
+The uploaded ID image is processed using EasyOCR and PaddleOCR.
+
+The system extracts key fields:
+
+Name
+
+Date of Birth
+
+Gender
+
+ID Number (Aadhar or PAN)
+
+The extracted text is cleaned and validated using regex and format checking.
+
+3. Face Detection & Matching
+Faces are detected in both:
+
+ID card photo (using Haarcascade)
+
+Selfie image
+
+A face recognition model (OpenCV with pretrained recognizer) computes embedding vectors for both images.
+
+A cosine similarity score is calculated.
+
+If the score exceeds a certain threshold (e.g., 0.90), it is considered a match.
+
+4. Decision Logic
+The system uses the following conditions to decide KYC status:
+
+All required fields successfully extracted
+
+Face match score above threshold
+
+Based on the checks:
+
+KYC Passed: If both text extraction and face match are successful
+
+KYC Failed: If either component fails
+
+5. Result Generation & Storage
+A structured JSON response is generated including:
+
+Extracted data
+
+Face match score
+
+KYC status
+
+This data is securely stored in MongoDB for future reference or auditing.
