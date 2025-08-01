@@ -46,64 +46,46 @@ A web application that automates electronic Know Your Customer (eKYC) processes 
 
 ---
 
-⚙️ Working of the Project
-The eKYC system follows a multi-stage deep learning pipeline to validate a user's identity using a government-issued ID (Aadhar or PAN) and a selfie image. Here’s a step-by-step breakdown:
+## ⚙️ Working of the Project
 
-1. Upload Inputs
-The user uploads:
+The eKYC system follows a multi-stage deep learning pipeline to validate a user's identity using a government-issued ID (Aadhar or PAN) and a selfie image. Below is a step-by-step breakdown of how the system operates:
 
-A scanned image of their Aadhar or PAN card
+### 🔹 1. Upload Inputs
+- The user uploads:
+  - A **scanned image** of their Aadhar or PAN card
+  - A **recent selfie** photo
 
-A recent selfie photo
+### 🔹 2. Text Extraction using OCR
+- The uploaded ID image is processed using **EasyOCR** and **PaddleOCR**
+- The system extracts the following key fields:
+  - **Name**
+  - **Date of Birth**
+  - **Gender**
+  - **ID Number** (Aadhar or PAN)
+- Extracted text is cleaned and validated using **regex** and format rules
 
-2. Text Extraction using OCR
-The uploaded ID image is processed using EasyOCR and PaddleOCR.
+### 🔹 3. Face Detection & Matching
+- Faces are detected from:
+  - The **ID card** using Haarcascade classifier
+  - The **selfie** using Haarcascade/OpenCV
+- Embedding vectors are computed using **OpenCV’s pretrained face recognizer**
+- A **cosine similarity score** is calculated between the two face vectors
+- If the score exceeds a predefined threshold (e.g., **0.90**), the faces are considered a match
 
-The system extracts key fields:
+### 🔹 4. Decision Logic
+- The KYC status is determined based on:
+  - Successful extraction of all required fields
+  - Face match score being above threshold
+- Final outcome:
+  - ✅ **KYC Passed**: if both OCR and face match succeed
+  - ❌ **KYC Failed**: if either OCR or face match fails
 
-Name
-
-Date of Birth
-
-Gender
-
-ID Number (Aadhar or PAN)
-
-The extracted text is cleaned and validated using regex and format checking.
-
-3. Face Detection & Matching
-Faces are detected in both:
-
-ID card photo (using Haarcascade)
-
-Selfie image
-
-A face recognition model (OpenCV with pretrained recognizer) computes embedding vectors for both images.
-
-A cosine similarity score is calculated.
-
-If the score exceeds a certain threshold (e.g., 0.90), it is considered a match.
-
-4. Decision Logic
-The system uses the following conditions to decide KYC status:
-
-All required fields successfully extracted
-
-Face match score above threshold
-
-Based on the checks:
-
-KYC Passed: If both text extraction and face match are successful
-
-KYC Failed: If either component fails
-
-5. Result Generation & Storage
-A structured JSON response is generated including:
-
-Extracted data
-
-Face match score
-
-KYC status
-
-This data is securely stored in MongoDB for future reference or auditing.
+### 🔹 5. Result Generation & Storage
+- A structured **JSON response** is generated containing:
+  - Extracted user data
+  - Face match score
+  - Final KYC status
+- This data is securely stored in **MongoDB** for:
+  - Future reference
+  - Verification logs
+  - Auditing and compliance
